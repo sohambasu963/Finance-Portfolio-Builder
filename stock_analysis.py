@@ -3,21 +3,18 @@ import pandas as pd
 import numpy as np
 import concurrent.futures
 import time
-import tkinter as tk
 import os
 
 os.environ['TK_SILENCE_DEPRECATION'] = '1'
-show_time = False
+SHOW_TIME = True
+start_time = time.time()
 
-if show_time: start_time = time.time()
 # symbol = AAPL
 def get_data(df, stock, rf_rate):
     ticker = yf.Ticker(stock)
     historical_data = ticker.history(period='10y')
     info = ticker.info
     
-    if 'currentPrice' in info.keys():
-        df.loc[stock]['Price'] = info['currentPrice']
     if 'forwardPE' in info.keys():
         df.loc[stock]['Forward PE'] = info['forwardPE']
     if 'dividendYield' in info.keys():
@@ -32,7 +29,8 @@ def get_data(df, stock, rf_rate):
     avg_return = returns.mean() * 252
     df.loc[stock]['Average Return'] = avg_return
     df.loc[stock]['Average Volatility'] = st_dev
-    df.loc[stock]['Sharpe Ratio'] = (avg_return - rf_rate) / st_dev
+    df.loc[stock]['Price'] = round(historical_data['Close'][-1], 2)
+    # df.loc[stock]['Sharpe Ratio'] = (avg_return - rf_rate) / st_dev
 
 def store_data():
     table = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
@@ -60,6 +58,7 @@ def store_data():
 
     df['Beta'].fillna(1, inplace=True)
     df.fillna(0, inplace=True)
+    df['Sharpe Ratio'] = (df['Average Return'] - rf_rate) / df['Average Volatility']
     df['low_risk'] = (1 / df['Average Volatility']) * (1 / df['Beta']) * df['Dividend Yield']
     df['high_return'] = df['Average Return'] * 0.5 + df['Sharpe Ratio'] * 0.2 + (1 / df['Forward PE']) * 0.2 + df['Beta'] * 0.1
 
@@ -73,9 +72,11 @@ def store_data():
 
     df.to_csv('stock_data.csv')
 
-
-
-if show_time:
+def print_time():
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time is {elapsed_time:.2f} seconds")
+
+if __name__ == '__main__':
+    store_data()
+    if SHOW_TIME: print_time()
