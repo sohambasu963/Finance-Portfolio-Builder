@@ -10,7 +10,9 @@ SHOW_TIME = True
 start_time = time.time()
 
 # symbol = AAPL
-def get_data(df, stock, rf_rate):
+def get_data(df, stock):
+    if "." in stock:
+        stock = stock.replace(".", "-")
     ticker = yf.Ticker(stock)
     historical_data = ticker.history(period='10y')
     info = ticker.info
@@ -30,7 +32,6 @@ def get_data(df, stock, rf_rate):
     df.loc[stock]['Average Return'] = avg_return
     df.loc[stock]['Average Volatility'] = st_dev
     df.loc[stock]['Price'] = round(historical_data['Close'][-1], 2)
-    # df.loc[stock]['Sharpe Ratio'] = (avg_return - rf_rate) / st_dev
 
 def store_data():
     table = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
@@ -51,26 +52,15 @@ def store_data():
 
     tickers = df.index.tolist()
 
-        
     with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
         for ticker in tickers:
-            executor.submit(get_data, df, ticker, rf_rate)
+            executor.submit(get_data, df, ticker)
 
     df['Beta'].fillna(1, inplace=True)
     df.fillna(0, inplace=True)
     df['Sharpe Ratio'] = (df['Average Return'] - rf_rate) / df['Average Volatility']
-    df['low_risk'] = (1 / df['Average Volatility']) * (1 / df['Beta']) * df['Dividend Yield']
-    df['high_return'] = df['Average Return'] * 0.5 + df['Sharpe Ratio'] * 0.2 + (1 / df['Forward PE']) * 0.2 + df['Beta'] * 0.1
 
-    df.sort_values(by='low_risk', ascending=False, inplace=True)
-    low_risk_stocks = df.head(10).index.tolist()
-
-    df.sort_values(by='high_return', ascending=False, inplace=True)
-    df['high_return'] = df['high_return'].replace(np.inf, np.nan)
-    df.dropna(subset=['high_return'], inplace=True)
-    high_return_stocks = df.head(10).index.tolist()
-
-    df.to_csv('stock_data.csv')
+    df.to_csv("./data/" + "old_stock_data" + ".csv")
 
 def print_time():
     end_time = time.time()
