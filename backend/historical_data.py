@@ -12,46 +12,45 @@ start_time = time.time()
 SP500_DATA_URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
 
 
-def get_old_data(ticker):
+# Need to add a second df to store the performance data
+
+def get_performance(df, symbol, ticker):
+    start_date = "2018-01-01"
+    end_date = "2023-01-01"
+    
+    historical_data = ticker.history(start=start_date, end=end_date)
+    total_return = (historical_data['Close'][-1] - historical_data['Close'][0]) / historical_data['Close'][0]
+    avg_return = (1 + total_return) ** (1 / 5) - 1
+    volatility = np.std(historical_data['Close'].pct_change()) * np.sqrt(252)
+    sharpe_ratio = avg_return / volatility
+
+    df.loc[symbol]['total_return'] = total_return
+    df.loc[symbol]['avg_return'] = avg_return
+    df.loc[symbol]['volatility'] = volatility
+    df.loc[symbol]['sharpe_ratio'] = sharpe_ratio
+    
+
+
+def get_historical_data(df, symbol, ticker):
     start_date = "2008-01-01"
     end_date = "2018-01-01"
 
-    if "." in ticker:
-        ticker = ticker.replace(".", "-")
-    ticker = yf.Ticker(ticker)
     historical_data = ticker.history(start=start_date, end=end_date)
-    info = ticker.info
-    return historical_data, info
-
-def get_current_data(ticker):
-    if "." in ticker:
-        ticker = ticker.replace(".", "-")
-    ticker = yf.Ticker(ticker)
-    historical_data = ticker.history(period='10y')
-    info = ticker.info
-    return historical_data, info
-
-
-def get_data(df, stock):
-    if "." in stock:
-        stock = stock.replace(".", "-")
-    ticker = yf.Ticker(stock)
-    historical_data = ticker.history(period='10y')
     info = ticker.info
     
     if 'forwardPE' in info.keys():
-        df.loc[stock]['forward_pe'] = info['forwardPE']
+        df.loc[symbol]['forward_pe'] = info['forwardPE']
     if 'dividendYield' in info.keys():
-        df.loc[stock]['div_yield'] = info['dividendYield']
+        df.loc[symbol]['div_yield'] = info['dividendYield']
     if 'beta' in info.keys():
-        df.loc[stock]['beta'] = info['beta']
+        df.loc[symbol]['beta'] = info['beta']
     if 'targetMeanPrice' in info.keys():
-        df.loc[stock]['analyst_target'] = info['targetMeanPrice']
+        df.loc[symbol]['analyst_target'] = info['targetMeanPrice']
 
     daily_returns = historical_data['Close'].pct_change()
-    df.loc[stock]['avg_return'] = daily_returns.mean() * 252
-    df.loc[stock]['volatility'] = np.std(daily_returns) * np.sqrt(252)
-    df.loc[stock]['price'] = round(historical_data['Close'][-1], 2)
+    df.loc[symbol]['avg_return'] = daily_returns.mean() * 252
+    df.loc[symbol]['volatility'] = np.std(daily_returns) * np.sqrt(252)
+    df.loc[symbol]['price'] = round(historical_data['Close'][-1], 2)
 
 def store_data():
     table = pd.read_html(SP500_DATA_URL)
@@ -70,11 +69,12 @@ def store_data():
     df['beta'] = [None] * df_len
     df['analyst_target'] = [None] * df_len
 
-    tickers = df.index.tolist()
+    stock_symbols = df.index.tolist()
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-        for ticker in tickers:
-            executor.submit(get_data, df, ticker)
+        for symbol in stock_symbols:
+            executor.submit(get_historical_data, df, symbol, yf.Ticker(symbol.replace(".", "-")))
+            executor.submit(get_performance, df, symbol, yf.Ticker(symbol.replace(".", "-")))
 
     df['beta'].fillna(1, inplace=True)
     df.fillna(0, inplace=True)
