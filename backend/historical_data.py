@@ -14,10 +14,11 @@ SP500_DATA_URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
 
 # Need to add a second df to store the performance data
 
-def get_performance(df, symbol, ticker):
+def get_performance(df, symbol):
     start_date = "2018-01-01"
     end_date = "2023-01-01"
     
+    ticker = yf.Ticker(symbol.replace(".", "-"))
     historical_data = ticker.history(start=start_date, end=end_date)
     total_return = (historical_data['Close'][-1] - historical_data['Close'][0]) / historical_data['Close'][0]
     avg_return = (1 + total_return) ** (1 / 5) - 1
@@ -31,13 +32,14 @@ def get_performance(df, symbol, ticker):
     
 
 
-def get_historical_data(df, symbol, ticker):
+def get_historical_data(df, symbol):
     start_date = "2013-01-01"
     end_date = "2018-01-01"
 
+    ticker = yf.Ticker(symbol.replace(".", "-"))
     historical_data = ticker.history(start=start_date, end=end_date)
     info = ticker.info
-    
+
     if 'forwardPE' in info.keys():
         df.loc[symbol]['forward_pe'] = info['forwardPE']
     if 'dividendYield' in info.keys():
@@ -75,8 +77,8 @@ def store_data():
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
         for symbol in stock_symbols:
-            executor.submit(get_historical_data, df, symbol, yf.Ticker(symbol.replace(".", "-")))
-            executor.submit(get_performance, performance_df, symbol, yf.Ticker(symbol.replace(".", "-")))
+            executor.submit(get_historical_data, df, symbol)
+            executor.submit(get_performance, performance_df, symbol)
 
     df['beta'].fillna(1, inplace=True)
     df.fillna(0, inplace=True)
