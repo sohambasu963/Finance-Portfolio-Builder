@@ -1,0 +1,58 @@
+.stockSearch {
+  margin-top: 105px;
+  display: flex;
+  text-align: center;
+}
+
+.stockSearch input {
+  width: 40rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  box-shadow: none;
+  border: none;
+}
+
+.searchIcon {
+  height: 3rem;
+  width: 2rem;
+  background-color: white;
+  display: grid;
+  place-items: center;
+}
+
+
+.searchIcon svg {
+  font-size: 35px;
+}
+
+.dataResult {
+  margin-top: 5px;
+  width: 300px;
+  height: 200px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.dataResult::-webkit-scrollbar {
+  display: none;
+}
+
+.dataResult .dataItem {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  color: black;
+}
+
+.dataItem p {
+  margin-left: 10px;
+}
+
+
+#clearBtn {
+  cursor: pointer;
+}
+

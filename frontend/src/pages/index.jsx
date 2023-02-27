@@ -1,6 +1,7 @@
-import Link from 'next/link'
-import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import Link from "next/link"
+import Head from "next/head"
+import { useState, useEffect } from "react"
+import StockSearch from "@/components/StockSearch"
 // import 'bootstrap/dist/css/bootsrap.min.css'
 // import styles from '@/styles/Home.module.css'
 
@@ -28,12 +29,7 @@ export default function Home() {
         <p>Search for stocks below to add them to your watchlist</p>
       </div>
       <div className="container">
-        <input
-          type="text"
-          placeholder="Search for a stock"
-          value={search}
-          onChange={handleSearch}
-        ></input>
+        <StockSearch />
       </div>
     </>
   )
