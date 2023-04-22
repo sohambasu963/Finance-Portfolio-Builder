@@ -35,7 +35,7 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
   return (
     <div ref={searchBarRef}>
       <Form onSubmit={(e) => e.preventDefault()}>
-        <InputGroup size="lg">
+        <InputGroup size="lg" style={{ width: "50rem" }}>
           <Form.Control
             type="text"
             placeholder="Search for stocks..."
@@ -49,14 +49,18 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
         {suggestions.length > 0 && (
           <Dropdown.Menu show>
             {suggestions.map((suggestion, index) => (
-              <Dropdown.Item
+              <Dropdown.Item 
+                style={{ width: "50rem" }}
                 key={index}
                 onSelect={() => {
                   onSuggestionSelect(suggestion);
                   setSuggestions([]);
                 }}
               >
-                {suggestion}
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>{suggestion}</span>
+                  <i className="bi bi-plus-circle" style={{ color: "green" }}></i>
+                </div>
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>

@@ -12,7 +12,6 @@ function App() {
   };
 
   const handleSuggestionSelect = (suggestion) => {
-    console.log(suggestion)
     setSearchTerm(suggestion);
     // Handle the suggestion selection, e.g., fetch stock data
   };
