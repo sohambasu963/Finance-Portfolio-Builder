@@ -7,14 +7,15 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
   const [suggestions, setSuggestions] = useState([]);
   const searchBarRef = useRef(null);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     const term = e.target.value;
     setSearchTerm(term);
     
     if (term.trim() === '') {
       setSuggestions([]);
     } else {
-      const newSuggestions = onSearch(term);
+      const newSuggestions = await onSearch(term);
+      console.log(newSuggestions)
       setSuggestions(newSuggestions || []);
     }
   };

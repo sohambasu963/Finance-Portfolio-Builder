@@ -2,13 +2,16 @@ import logo from './logo.svg';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import { useState } from 'react';
+import { fetchStockSuggestions } from './api';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
 
-  const handleSearch = (searchTerm) => {
-    return ['AAPL', 'GOOGL', 'MSFT'];
+  const handleSearch = async (searchTerm) => {
+    // Fetch stock suggestions from the API
+    var newSuggestions = await fetchStockSuggestions(searchTerm);
+    return newSuggestions;
   };
 
   const handleSuggestionSelect = (suggestion) => {
