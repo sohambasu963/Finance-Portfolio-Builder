@@ -53,7 +53,8 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
               <Dropdown.Item 
                 style={{ width: "50rem" }}
                 key={index}
-                onSelect={() => {
+                onClick={() => {
+                  console.log(suggestion);
                   onSuggestionSelect(suggestion);
                   setSuggestions([]);
                 }}

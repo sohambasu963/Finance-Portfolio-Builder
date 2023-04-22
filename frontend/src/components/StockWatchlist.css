@@ -1,0 +1,17 @@
+.stock-table {
+    margin-top: 2rem;
+    color: white;
+  }
+  
+  .stock-table thead th {
+    border-bottom: 2px solid white;
+  }
+  
+  .stock-table tbody tr {
+    border-bottom: 1px solid white;
+  }
+  
+  .stock-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
