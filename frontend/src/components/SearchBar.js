@@ -15,7 +15,7 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
       setSuggestions([]);
     } else {
       const newSuggestions = await onSearch(term);
-      console.log(newSuggestions)
+      // console.log(newSuggestions)
       setSuggestions(newSuggestions || []);
     }
   };
@@ -53,9 +53,9 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
               <Dropdown.Item 
                 style={{ width: "50rem" }}
                 key={index}
-                onClick={() => {
+                onClick={async () => {
                   console.log(suggestion);
-                  onSuggestionSelect(suggestion);
+                  await onSuggestionSelect(suggestion);
                   setSuggestions([]);
                 }}
               >

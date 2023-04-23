@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import StockWatchlist from './components/StockWatchlist';
-import { fetchStockSuggestions } from './api';
+import { fetchStockSuggestions, fetchStockData } from './api';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,31 +11,25 @@ function App() {
 
   const handleSearch = async (searchTerm) => {
     // Fetch stock suggestions from the API
-    // var newSuggestions = await fetchStockSuggestions(searchTerm);
-    // return newSuggestions;
-    return ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'FB', 'TSLA', 'NFLX', 'NVDA', 'PYPL', 'ADBE'];
+    var newSuggestions = await fetchStockSuggestions(searchTerm);
+    return newSuggestions;
+    // return ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'FB', 'TSLA', 'NFLX', 'NVDA', 'PYPL', 'ADBE'];
   };
 
-  const handleSuggestionSelect = (suggestion) => {
+  const handleSuggestionSelect = async (suggestion) => {
     setSearchTerm(suggestion);
     // Handle the suggestion selection, e.g., fetch stock data
     // if suggestion not in watchlist
     if (!watchlist.some((stock) => stock.symbol === suggestion)) {
-      const stockData = {
-        symbol: suggestion,
-        name: 'Example Company Name', // Replace with fetched company name
-        currentPrice: 123.45, // Replace with fetched current price
-        percentageChange: 1.23, // Replace with fetched open to close % change
-        dividendYield: 2.34, // Replace with fetched dividend yield
-      };
-      watchlist.push(stockData);
-      setWatchlist(watchlist);
+      const stockData = await fetchStockData(suggestion);
+      console.log(stockData)
+      setWatchlist([...watchlist, stockData]);
     }
   };
 
   const handleRemoveStock = (symbol) => {
     console.log(symbol)
-    setWatchlist(watchlist.filter((stock) => stock.symbol !== symbol));
+    setWatchlist(watchlist.filter((stock) => stock.Symbol !== symbol));
   };
 
   return (

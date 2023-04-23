@@ -24,6 +24,36 @@ const fetchStockSuggestions = async (searchTerm) => {
   
     return suggestions;
   };
+
+const fetchStockData = async (symbol) => {
+    const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
+    const API_URL = 'https://www.alphavantage.co/query';
+    const QUOTE_FUNCTION = 'GLOBAL_QUOTE';
+    const OVERVIEW_FUNCTION = 'OVERVIEW';
+
+    const quoteResponse = await fetch(
+        `${API_URL}?function=${QUOTE_FUNCTION}&symbol=${symbol}&apikey=${apiKey}`
+    );
+    const quoteData = await quoteResponse.json();
+
+    const overviewResponse = await fetch(
+        `${API_URL}?function=${OVERVIEW_FUNCTION}&symbol=${symbol}&apikey=${apiKey}`
+    );
+    const overviewData = await overviewResponse.json();
+
+    const stockData = {
+        "Symbol": overviewData["Symbol"],
+        "Name": overviewData["Name"],
+        "Price": quoteData["Global Quote"]["05. price"],
+        "Currency": overviewData["Currency"],
+        "PercentChange": quoteData["Global Quote"]["10. change percent"],
+        "DividendYield": (Number(overviewData["DividendYield"]) * 100).toFixed(2).toString() + "%",
+        "PERatio": overviewData["PERatio"],
+        "Beta": overviewData["Beta"],
+    }
+    return stockData
+
+}
   
-  export { fetchStockSuggestions };
+  export { fetchStockSuggestions, fetchStockData };
   

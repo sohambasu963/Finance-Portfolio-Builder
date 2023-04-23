@@ -9,32 +9,39 @@ const StockWatchlist = ({ stocks, onRemoveStock }) => {
         <tr>
           <th>Symbol</th>
           <th>Company Name</th>
-          <th>Current Price</th>
-          <th>Open to Close % Change</th>
+          <th>Price</th>
+          <th>Currency</th>
+          <th>Percentage Change</th>
           <th>Dividend Yield</th>
+          <th>P/E Ratio</th>
+          <th>Beta</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {stocks.map((stock) => (
-          <tr key={stock.symbol}>
-            <td>{stock.symbol}</td>
-            <td>{stock.name}</td>
-            <td>{stock.currentPrice}</td>
-            <td>{stock.percentageChange.toFixed(2)}%</td>
-            <td>{stock.dividendYield.toFixed(2)}%</td>
-            <td>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => onRemoveStock(stock.symbol)}
-              >
-                -
-              </Button>
-            </td>
-          </tr>
+            <tr key={stock.Symbol}>
+                <td>{stock.Symbol}</td>
+                <td>{stock.Name}</td>
+                <td>{stock.Price}</td>
+                <td>{stock.Currency}</td>
+                <td>{stock.PercentChange}</td>
+                <td>{stock.DividendYield}</td>
+                <td>{stock.PERatio}</td>
+                <td>{stock.Beta}</td>
+                <td>
+                    <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => onRemoveStock(stock.Symbol)}
+                    >
+                    -
+                    </Button>
+                </td>
+                </tr>
         ))}
-      </tbody>
+        </tbody>
+
     </table>
   );
 };
