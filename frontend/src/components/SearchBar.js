@@ -60,7 +60,13 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
                 }}
               >
                 <div className="d-flex justify-content-between align-items-center">
-                  <span>{suggestion}</span>
+                  <div>
+                    <strong>{suggestion.symbol}</strong> - {suggestion.name}
+                    <br />
+                    <small>
+                      {suggestion.currency}
+                    </small>
+                  </div>
                   <i className="bi bi-plus-circle" style={{ color: "green" }}></i>
                 </div>
               </Dropdown.Item>

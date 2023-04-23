@@ -2,7 +2,7 @@ const fetchStockSuggestions = async (searchTerm) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
     const FUNCTION = 'SYMBOL_SEARCH';
-    
+  
     const response = await fetch(
       `${API_URL}?function=${FUNCTION}&keywords=${searchTerm}&apikey=${apiKey}`
     );
@@ -16,44 +16,51 @@ const fetchStockSuggestions = async (searchTerm) => {
     // Extract stock suggestions from the API response
     const suggestions = data.bestMatches
       .filter((item) => {
-        const region = item['4. region'];
+        const currency = item['8. currency'];
         // Filter for US and Canadian stocks
-        return region === 'United States' || region === 'Canada';
+        return currency === 'USD' || currency === 'CAD';
       })
-      .map((item) => item['1. symbol']);
+      .map((item) => ({
+        symbol: item['1. symbol'],
+        name: item['2. name'],
+        currency: item['8. currency']
+      }));
   
     return suggestions;
   };
+  
 
-const fetchStockData = async (symbol) => {
+  const fetchStockData = async (suggestion) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
     const QUOTE_FUNCTION = 'GLOBAL_QUOTE';
     const OVERVIEW_FUNCTION = 'OVERVIEW';
-
+  
     const quoteResponse = await fetch(
-        `${API_URL}?function=${QUOTE_FUNCTION}&symbol=${symbol}&apikey=${apiKey}`
+      `${API_URL}?function=${QUOTE_FUNCTION}&symbol=${suggestion.symbol}&apikey=${apiKey}`
     );
     const quoteData = await quoteResponse.json();
-
+  
     const overviewResponse = await fetch(
-        `${API_URL}?function=${OVERVIEW_FUNCTION}&symbol=${symbol}&apikey=${apiKey}`
+      `${API_URL}?function=${OVERVIEW_FUNCTION}&symbol=${suggestion.symbol.split('.')[0]}&apikey=${apiKey}`
     );
     const overviewData = await overviewResponse.json();
+    console.log(quoteData)
+    console.log(overviewData)
 
     const stockData = {
-        "Symbol": overviewData["Symbol"],
-        "Name": overviewData["Name"],
-        "Price": quoteData["Global Quote"]["05. price"],
-        "Currency": overviewData["Currency"],
-        "PercentChange": quoteData["Global Quote"]["10. change percent"],
-        "DividendYield": (Number(overviewData["DividendYield"]) * 100).toFixed(2).toString() + "%",
-        "PERatio": overviewData["PERatio"],
-        "Beta": overviewData["Beta"],
+      "Symbol": suggestion.symbol,
+      "Name": suggestion.name,
+      "Price": quoteData["Global Quote"]["05. price"],
+      "Currency": suggestion.currency,
+      "PercentChange": quoteData["Global Quote"]["10. change percent"],
+      "DividendYield": (Number(overviewData["DividendYield"]) * 100).toFixed(2).toString() + "%",
+      "PERatio": overviewData["PERatio"],
+      "Beta": overviewData["Beta"],
     }
     return stockData
-
-}
+  }
+  
   
   export { fetchStockSuggestions, fetchStockData };
   
