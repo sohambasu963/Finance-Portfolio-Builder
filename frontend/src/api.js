@@ -1,7 +1,7 @@
 const fetchStockSuggestions = async (searchTerm) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
-    const FUNCTION = 'SYMBOL_SEARCH';
+    const FUNCTION = 'symbol_SEARCH';
   
     const response = await fetch(
       `${API_URL}?function=${FUNCTION}&keywords=${searchTerm}&apikey=${apiKey}`
@@ -49,14 +49,14 @@ const fetchStockSuggestions = async (searchTerm) => {
     console.log(overviewData)
 
     const stockData = {
-      "Symbol": suggestion.symbol,
-      "Name": suggestion.name,
-      "Price": quoteData["Global Quote"]["05. price"],
-      "Currency": suggestion.currency,
-      "PercentChange": quoteData["Global Quote"]["10. change percent"],
-      "DividendYield": (Number(overviewData["DividendYield"]) * 100).toFixed(2).toString() + "%",
-      "PERatio": overviewData["PERatio"],
-      "Beta": overviewData["Beta"],
+      "symbol": suggestion.symbol,
+      "name": suggestion.name,
+      "price": Number(quoteData["Global Quote"]["05. price"]).toFixed(2),
+      "currency": suggestion.currency,
+      "percentChange": Number(quoteData["Global Quote"]["10. change percent"].slice(0, -1)).toFixed(2),
+      "dividendYield": overviewData["DividendYield"] ? (Number(overviewData["DividendYield"]) * 100).toFixed(2) : "N/A",
+      "peRatio": overviewData["PERatio"] ? Number(overviewData["PERatio"]).toFixed(2) : "N/A",
+      "beta": overviewData["Beta"] ? Number(overviewData["Beta"]).toFixed(2) : "N/A",
     }
     return stockData
   }

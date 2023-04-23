@@ -11,8 +11,8 @@ const StockWatchlist = ({ stocks, onRemoveStock }) => {
           <th>Company Name</th>
           <th>Price</th>
           <th>Currency</th>
-          <th>Percentage Change</th>
-          <th>Dividend Yield</th>
+          <th>Change (%)</th>
+          <th>Dividend Yield (%)</th>
           <th>P/E Ratio</th>
           <th>Beta</th>
           <th></th>
@@ -20,20 +20,20 @@ const StockWatchlist = ({ stocks, onRemoveStock }) => {
       </thead>
       <tbody>
         {stocks.map((stock) => (
-            <tr key={stock.Symbol}>
-                <td>{stock.Symbol}</td>
-                <td>{stock.Name}</td>
-                <td>{stock.Price}</td>
-                <td>{stock.Currency}</td>
-                <td>{stock.PercentChange}</td>
-                <td>{stock.DividendYield}</td>
-                <td>{stock.PERatio}</td>
-                <td>{stock.Beta}</td>
+            <tr key={stock.symbol}>
+                <td>{stock.symbol}</td>
+                <td>{stock.name}</td>
+                <td>{stock.price}</td>
+                <td>{stock.currency}</td>
+                <td>{stock.percentChange}</td>
+                <td>{stock.dividendYield}</td>
+                <td>{stock.peRatio}</td>
+                <td>{stock.beta}</td>
                 <td>
                     <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => onRemoveStock(stock.Symbol)}
+                    onClick={() => onRemoveStock(stock.symbol)}
                     >
                     -
                     </Button>

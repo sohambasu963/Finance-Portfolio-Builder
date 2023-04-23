@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Form, InputGroup, Dropdown } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
 
-const SearchBar = ({ onSearch, onSuggestionSelect }) => {
+const SearchBar = ({ onSearch, onSuggestionSelect, watchlist }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const searchBarRef = useRef(null);
@@ -56,7 +56,7 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
                 onClick={async () => {
                   console.log(suggestion);
                   await onSuggestionSelect(suggestion);
-                  setSuggestions([]);
+                  // setSuggestions([]);
                 }}
               >
                 <div className="d-flex justify-content-between align-items-center">
@@ -67,7 +67,11 @@ const SearchBar = ({ onSearch, onSuggestionSelect }) => {
                       {suggestion.currency}
                     </small>
                   </div>
-                  <i className="bi bi-plus-circle" style={{ color: "green" }}></i>
+                  {watchlist.some((stock) => stock.symbol === suggestion.symbol) ? (
+                    <i className="bi bi-check-circle" style={{ color: "green", fontSize: "1.5rem" }}></i>
+                  ) : (
+                    <i className="bi bi-plus-circle" style={{ color: "green", fontSize: "1.5rem" }}></i>
+                  )}
                 </div>
               </Dropdown.Item>
             ))}
