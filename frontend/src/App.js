@@ -28,7 +28,6 @@ function App() {
   };
 
   const handleRemoveStock = (symbol) => {
-    console.log(symbol)
     setWatchlist(watchlist.filter((stock) => stock.symbol !== symbol));
   };
 

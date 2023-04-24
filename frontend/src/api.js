@@ -45,7 +45,6 @@ const fetchStockSuggestions = async (searchTerm) => {
       `${API_URL}?function=${OVERVIEW_FUNCTION}&symbol=${suggestion.symbol.split('.')[0]}&apikey=${apiKey}`
     );
     const overviewData = await overviewResponse.json();
-    console.log(overviewData)
 
     const stockData = {
       "symbol": suggestion.symbol,

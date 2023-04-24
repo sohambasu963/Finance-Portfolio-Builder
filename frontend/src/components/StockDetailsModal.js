@@ -31,19 +31,32 @@ const StockDetailsModal = ({ show, onHide, historicalData }) => {
           ],
         },
         options: {
-          scales: {
-            x: {
-              type: 'time',
-              time: {
-                unit: 'month',
-              },
-              adapters: { 
-                date: {
-                  locale: enUS, 
+            scales: {
+                x: {
+                type: 'time',
+                time: {
+                    unit: 'month',
                 },
-              }, 
+                adapters: { 
+                    date: {
+                        locale: enUS, 
+                    },
+                }, 
+                },
             },
-          },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItem) {
+                            const label = tooltipItem[0].label.split(',');
+                            return label[0] + ',' + label[1];
+                        }
+                    }
+                },
+            },
         },
       };
 
