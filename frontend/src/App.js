@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import StockWatchlist from './components/StockWatchlist';
-import { fetchStockSuggestions, fetchStockData } from './api';
+import { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData } from './api';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
 
+  fetchStockHistoricalData('AAPL');
   const handleSearch = async (searchTerm) => {
     // Fetch stock suggestions from the API
     var newSuggestions = await fetchStockSuggestions(searchTerm);

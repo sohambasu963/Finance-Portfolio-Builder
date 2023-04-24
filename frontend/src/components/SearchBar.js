@@ -54,7 +54,6 @@ const SearchBar = ({ onSearch, onSuggestionSelect, watchlist }) => {
                 style={{ width: "50rem" }}
                 key={index}
                 onClick={async () => {
-                  console.log(suggestion);
                   await onSuggestionSelect(suggestion);
                   // setSuggestions([]);
                 }}

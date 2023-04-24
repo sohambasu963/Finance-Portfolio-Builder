@@ -45,8 +45,6 @@ const fetchStockSuggestions = async (searchTerm) => {
       `${API_URL}?function=${OVERVIEW_FUNCTION}&symbol=${suggestion.symbol.split('.')[0]}&apikey=${apiKey}`
     );
     const overviewData = await overviewResponse.json();
-    console.log(quoteData)
-    console.log(overviewData)
 
     const stockData = {
       "symbol": suggestion.symbol,
@@ -60,7 +58,37 @@ const fetchStockSuggestions = async (searchTerm) => {
     }
     return stockData
   }
+
+  const fetchStockHistoricalData = async (symbol) => {
+    const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
+    const API_URL = 'https://www.alphavantage.co/query';
+    const FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED';
+    const response = await fetch(
+      `${API_URL}?function=${FUNCTION}&symbol=${symbol}&outputsize=compact&apikey=${apiKey}`
+    );
+    const data = await response.json();
+  
+    if (!data['Time Series (Daily)']) {
+      console.error('Invalid API response:', data);
+      return [];
+    }
+    console.log(data)
+
+    const timeSeriesData = data['Time Series (Daily)'];
+
+    const dates = Object.keys(timeSeriesData);
+    const adjustedClosingPrices = dates.map((date) => parseFloat(timeSeriesData[date]['5. adjusted close']).toFixed(2));
+    
+    const historicalData = {
+        "stock": data["Meta Data"]["2. Symbol"],
+        "labels": dates,
+        "data": adjustedClosingPrices
+    }
+  
+    return historicalData;
+  };
   
   
-  export { fetchStockSuggestions, fetchStockData };
+  
+  export { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData };
   
