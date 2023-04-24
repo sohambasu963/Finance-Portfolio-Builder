@@ -45,6 +45,7 @@ const fetchStockSuggestions = async (searchTerm) => {
       `${API_URL}?function=${OVERVIEW_FUNCTION}&symbol=${suggestion.symbol.split('.')[0]}&apikey=${apiKey}`
     );
     const overviewData = await overviewResponse.json();
+    console.log(overviewData)
 
     const stockData = {
       "symbol": suggestion.symbol,
@@ -53,7 +54,7 @@ const fetchStockSuggestions = async (searchTerm) => {
       "currency": suggestion.currency,
       "percentChange": Number(quoteData["Global Quote"]["10. change percent"].slice(0, -1)).toFixed(2),
       "dividendYield": overviewData["DividendYield"] ? (Number(overviewData["DividendYield"]) * 100).toFixed(2) : "N/A",
-      "peRatio": overviewData["PERatio"] ? Number(overviewData["PERatio"]).toFixed(2) : "N/A",
+      "peRatio": overviewData["PERatio"] && overviewData["PERatio"] != "None" ? Number(overviewData["PERatio"]).toFixed(2) : "N/A",
       "beta": overviewData["Beta"] ? Number(overviewData["Beta"]).toFixed(2) : "N/A",
     }
     return stockData
@@ -72,7 +73,6 @@ const fetchStockSuggestions = async (searchTerm) => {
       console.error('Invalid API response:', data);
       return [];
     }
-    console.log(data)
 
     const timeSeriesData = data['Time Series (Daily)'];
 

@@ -12,14 +12,14 @@
 }
 
 h1 {
-  color: white;
+  color: #23b7c7;
   font-size: 3rem;
   font-weight: 300;
   margin-bottom: 1rem;
 }
 
-.subheading {
-  color: white;
+p {
+  color: #10cbe0;
   font-size: 1.5rem;
   font-weight: 300;
   margin-bottom: 2rem;

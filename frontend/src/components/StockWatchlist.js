@@ -12,9 +12,7 @@ const StockWatchlist = ({ stocks, onRemoveStock }) => {
     const [historicalData, setHistoricalData] = useState({ labels: [], data: [] });
 
     const handleStockClick = async (symbol) => {
-        console.log(symbol)
         const data = await fetchStockHistoricalData(symbol);
-        console.log(data)
         setHistoricalData(data);
         setShowModal(true);
       };

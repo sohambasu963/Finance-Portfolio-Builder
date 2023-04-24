@@ -9,7 +9,6 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
 
-  fetchStockHistoricalData('AAPL');
   const handleSearch = async (searchTerm) => {
     // Fetch stock suggestions from the API
     var newSuggestions = await fetchStockSuggestions(searchTerm);
@@ -25,7 +24,6 @@ function App() {
       return;
     }
     const stockData = await fetchStockData(suggestion);
-    console.log(stockData)
     setWatchlist([...watchlist, stockData]);
   };
 
@@ -38,7 +36,7 @@ function App() {
     <div className="App">
       <div className='dashboard'>
         <h1>Stock Watchlist</h1>
-        <p className='subheading'>Search for stocks below to add them to your watchlist</p>
+        <p>Research stocks for your own custom portfolio</p>
         <SearchBar
         onSearch={handleSearch}
         onSuggestionSelect={handleSuggestionSelect}
