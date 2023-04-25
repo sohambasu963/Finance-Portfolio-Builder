@@ -5,7 +5,7 @@ import StockWatchlist from './components/StockWatchlist';
 import CustomPortfolioModal from './components/CustomPortfolioModal';
 import { Button, Modal } from 'react-bootstrap';
 
-import { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData } from './api';
+import { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData, fetchPortfolio } from './api';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +45,7 @@ function App() {
 
   const handleShowPortfolioModal = async () => {
     try {
-      const portfolioData = await calculatePortfolio(watchlist);
+      const portfolioData = await fetchPortfolio(watchlist);
       // Pass the portfolioData to the CustomPortfolioModal component, e.g., using a state variable
       setShowPortfolioModal(true);
     } catch (error) {

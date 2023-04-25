@@ -88,12 +88,13 @@ const fetchStockSuggestions = async (searchTerm) => {
   };
   
 const fetchPortfolio = async (watchlist) => {
-  const response = await fetch('/api/calculate-portfolio', {
+  console.log(watchlist)
+  const response = await fetch('http://127.0.0.1:5000/portfolio', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ watchlist }),
+    body: JSON.stringify(watchlist),
   });
 
   if (!response.ok) {
@@ -101,6 +102,7 @@ const fetchPortfolio = async (watchlist) => {
   }
 
   const data = await response.json();
+  console.log(data)
   return data;
 };
 
