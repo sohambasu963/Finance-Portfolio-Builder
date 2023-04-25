@@ -2,18 +2,22 @@ import React, { useState } from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import StockWatchlist from './components/StockWatchlist';
+import CustomPortfolioModal from './components/CustomPortfolioModal';
+import { Button, Modal } from 'react-bootstrap';
+
 import { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData } from './api';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+
 
   const handleSearch = async (searchTerm) => {
     // Fetch stock suggestions from the API
     var newSuggestions = await fetchStockSuggestions(searchTerm);
     return newSuggestions;
-    // return ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'FB', 'TSLA', 'NFLX', 'NVDA', 'PYPL', 'ADBE'];
   };
 
   const handleSuggestionSelect = async (suggestion) => {
@@ -31,20 +35,53 @@ function App() {
     setWatchlist(watchlist.filter((stock) => stock.symbol !== symbol));
   };
 
+  const handleGenerateWatchlist = () => {
+    // Add your logic to generate the watchlist here
+  };  
+
+  const handleClosePortfolioModal = () => {
+    setShowPortfolioModal(false);
+  };
+
+  const handleShowPortfolioModal = () => {
+    setShowPortfolioModal(true);
+  };
+
+
   return (
     <div className="App">
       <div className='dashboard'>
         <h1>Stock Watchlist</h1>
-        <p>Research stocks for your own custom portfolio</p>
+        <p className='subheading'>Research stocks for your own custom portfolio</p>
         <SearchBar
         onSearch={handleSearch}
         onSuggestionSelect={handleSuggestionSelect}
         watchlist={watchlist}
         />
-        <StockWatchlist stocks={watchlist} onRemoveStock={handleRemoveStock}/>
+        <StockWatchlist stocks={watchlist} onRemoveStock={handleRemoveStock} />
+        <Button
+          className="generate-watchlist-btn"
+          variant="success"
+          size="lg"
+          onClick={handleGenerateWatchlist}
+        >
+          Generate Watchlist
+        </Button>
+        <Button
+          className="generate-portfolio-btn"
+          variant="success"
+          size="lg"
+          onClick={handleShowPortfolioModal}
+        >
+          Generate Portfolio
+        </Button>
+        <CustomPortfolioModal
+          show={showPortfolioModal}
+          onHide={handleClosePortfolioModal}
+        />
       </div>
     </div>
   );
 }
-
+// Symbol, Company Name, Price, Currency, Shares, Book Value (CAD), Book Value (Local)
 export default App;

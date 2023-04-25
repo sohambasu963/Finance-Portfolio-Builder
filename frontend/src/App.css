@@ -18,10 +18,22 @@ h1 {
   margin-bottom: 1rem;
 }
 
-p {
+.subheading {
   color: #10cbe0;
   font-size: 1.5rem;
   font-weight: 300;
   margin-bottom: 2rem;
+}
+
+.generate-watchlist-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+}
+
+.generate-portfolio-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
 }
 
