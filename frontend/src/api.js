@@ -87,7 +87,23 @@ const fetchStockSuggestions = async (searchTerm) => {
     return historicalData;
   };
   
+const fetchPortfolio = async (watchlist) => {
+  const response = await fetch('/api/calculate-portfolio', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ watchlist }),
+  });
+
+  if (!response.ok) {
+    throw new Error('An error occurred while calculating the portfolio');
+  }
+
+  const data = await response.json();
+  return data;
+};
+
   
-  
-  export { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData };
+  export { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData, fetchPortfolio};
   

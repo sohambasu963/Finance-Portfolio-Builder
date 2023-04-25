@@ -43,8 +43,14 @@ function App() {
     setShowPortfolioModal(false);
   };
 
-  const handleShowPortfolioModal = () => {
-    setShowPortfolioModal(true);
+  const handleShowPortfolioModal = async () => {
+    try {
+      const portfolioData = await calculatePortfolio(watchlist);
+      // Pass the portfolioData to the CustomPortfolioModal component, e.g., using a state variable
+      setShowPortfolioModal(true);
+    } catch (error) {
+      console.error('Error while generating the portfolio:', error);
+    }
   };
 
 
