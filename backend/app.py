@@ -10,10 +10,11 @@ CORS(app)
 #     return jsonify({"message": "Hello, this is a simple endpoint!"})
 
 @app.route('/portfolio', methods=['POST'])
-def calculate_portfolio():
+async def calculate_portfolio():
     stocks = request.json
-    metrics = get_portfolio(stocks)
+    metrics = await get_portfolio(stocks)
     print(metrics)
+    print(type(metrics))
     portfolio = []
     # for stock in stocks:
     #     stock_data = {
