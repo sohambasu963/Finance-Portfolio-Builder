@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from calculate_portfolio import get_portfolio
 
 app = Flask(__name__)
 CORS(app)
@@ -11,21 +12,20 @@ CORS(app)
 @app.route('/portfolio', methods=['POST'])
 def calculate_portfolio():
     stocks = request.json
-    print(stocks)
-    # Perform your calculations here based on the stock data received
-    # This is just an example; modify the logic as needed
+    metrics = get_portfolio(stocks)
+    print(metrics)
     portfolio = []
-    for stock in stocks:
-        stock_data = {
-            "symbol": stock["symbol"],
-            "company_name": stock["name"],
-            "price": stock["price"],
-            "currency": stock["currency"],
-            "shares": 10,  # Example calculation; replace with your logic
-            "book_value_cad": float(stock["price"]) * 10,  # Example calculation; replace with your logic
-            "book_value_local": float(stock["price"]) * 10,  # Example calculation; replace with your logic
-        }
-        portfolio.append(stock_data)
+    # for stock in stocks:
+    #     stock_data = {
+    #         "symbol": stock["symbol"],
+    #         "company_name": stock["name"],
+    #         "price": stock["price"],
+    #         "currency": stock["currency"],
+    #         "shares": 10,  # Example calculation; replace with your logic
+    #         "book_value_cad": float(stock["price"]) * 10,  # Example calculation; replace with your logic
+    #         "book_value_local": float(stock["price"]) * 10,  # Example calculation; replace with your logic
+    #     }
+    #     portfolio.append(stock_data)
 
     return jsonify(portfolio)
 
