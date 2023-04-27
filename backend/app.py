@@ -13,22 +13,7 @@ CORS(app)
 async def calculate_portfolio():
     stocks = request.json
     metrics = await get_portfolio(stocks)
-    print(metrics)
-    print(type(metrics))
-    portfolio = []
-    # for stock in stocks:
-    #     stock_data = {
-    #         "symbol": stock["symbol"],
-    #         "company_name": stock["name"],
-    #         "price": stock["price"],
-    #         "currency": stock["currency"],
-    #         "shares": 10,  # Example calculation; replace with your logic
-    #         "book_value_cad": float(stock["price"]) * 10,  # Example calculation; replace with your logic
-    #         "book_value_local": float(stock["price"]) * 10,  # Example calculation; replace with your logic
-    #     }
-    #     portfolio.append(stock_data)
-
-    return jsonify(portfolio)
+    return jsonify(metrics)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

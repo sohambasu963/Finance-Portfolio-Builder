@@ -10,6 +10,33 @@ load_dotenv()
 
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 
+def calculate_shares(portfolio_data, portfolio_value, exchange_rate):
+    for stock in portfolio_data:
+        if stock['currency'] == 'USD':
+            stock['shares'] = round((portfolio_value * stock['weight']) / (stock['price'] * exchange_rate))
+            stock['bookValueCAD'] = round(stock['shares'] * stock['price'] * exchange_rate, 2)
+            stock['bookValueLocal'] = round(stock['shares'] * stock['price'], 2)
+        else:
+            stock['shares'] = round((portfolio_value * stock['weight']) / stock['price'])
+            stock['bookValueCAD'] = round(stock['shares'] * stock['price'], 2)
+            stock['bookValueLocal'] = stock['book_value_cad']
+        stock.pop('weight', None)
+
+    return portfolio_data
+
+async def get_exchange_rate():
+    API = "https://www.alphavantage.co/query"
+    API_FUNCTION = "CURRENCY_EXCHANGE_RATE"
+    FROM_CURRENCY = "USD"
+    TO_CURRENCY = "CAD"
+    API_URL = f"{API}?function={API_FUNCTION}&from_currency={FROM_CURRENCY}&to_currency={TO_CURRENCY}&apikey={ALPHA_VANTAGE_API_KEY}"
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(API_URL)
+        data = response.json()
+
+    exchange_rate = float(data['Realtime Currency Exchange Rate']['5. Exchange Rate'])
+    return exchange_rate
 
 def get_optimal_weights(avg_return, cov_matrix, rf_rate):
     num_assets = len(avg_return)
@@ -39,48 +66,32 @@ def get_optimal_weights(avg_return, cov_matrix, rf_rate):
 
 async def get_historical_data(tickers):
     price_data = None
-    max_retries = 3
 
     for ticker in tickers:
-        retries = 0
-        while retries < max_retries:
-            try:
-                # Fetch historical stock data using AlphaVantage API
-                API = "https://www.alphavantage.co/query"
-                API_FUNCTION = "TIME_SERIES_DAILY_ADJUSTED"
-                API_URL = f"{API}?function={API_FUNCTION}&symbol={ticker}&outputsize=full&apikey={ALPHA_VANTAGE_API_KEY}"
+        # Fetch historical stock data using AlphaVantage API
+        API = "https://www.alphavantage.co/query"
+        API_FUNCTION = "TIME_SERIES_DAILY_ADJUSTED"
+        API_URL = f"{API}?function={API_FUNCTION}&symbol={ticker}&outputsize=full&apikey={ALPHA_VANTAGE_API_KEY}"
 
-                async with httpx.AsyncClient() as client:
-                    response = await client.get(API_URL)
-                    data = response.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.get(API_URL)
+            data = response.json()
 
-                # Process historical data
-                time_series = data.get('Time Series (Daily)')
-                if time_series:
-                    historical_data = []
-                    for date, values in time_series.items():
-                        adjusted_close = float(values['5. adjusted close'])
-                        historical_data.append((date, adjusted_close))
+        # Process historical data
+        time_series = data.get('Time Series (Daily)')
+        if time_series:
+            historical_data = []
+            for date, values in time_series.items():
+                adjusted_close = float(values['5. adjusted close'])
+                historical_data.append((date, adjusted_close))
 
-                    historical_data = sorted(historical_data, key=lambda x: x[0])
-                    ticker_price_data = pd.DataFrame(historical_data, columns=["Date", ticker]).set_index("Date")
+            historical_data = sorted(historical_data, key=lambda x: x[0])
+            ticker_price_data = pd.DataFrame(historical_data, columns=["Date", ticker]).set_index("Date")
 
-                    if price_data is None:
-                        price_data = ticker_price_data
-                    else:
-                        price_data = price_data.merge(ticker_price_data, left_index=True, right_index=True, how="outer")
-                    break
-                else:
-                    raise ValueError("Invalid data received from API")
-
-            except Exception as e:
-                retries += 1
-                print(f"Error while fetching data for {ticker}: {e}")
-                if retries < max_retries:
-                    print(f"Retrying {retries}/{max_retries}...")
-                else:
-                    print(f"Failed to fetch data for {ticker} after {max_retries} retries.")
-                    return None
+            if price_data is None:
+                price_data = ticker_price_data
+            else:
+                price_data = price_data.merge(ticker_price_data, left_index=True, right_index=True, how="outer")
 
     return price_data
 
@@ -102,18 +113,45 @@ async def get_rf_rate():
 
 
 
-async def get_portfolio(stocks):
-    print(stocks)
-    tickers = [stock['symbol'] for stock in stocks]
-    price_data = await get_historical_data(tickers)
+# async def get_portfolio(stocks):
+#     print(stocks)
+#     tickers = [stock['symbol'] for stock in stocks]
+#     price_data = await get_historical_data(tickers)
 
-    daily_returns = price_data.pct_change().dropna()
+#     daily_returns = price_data.pct_change().dropna()
+#     avg_return = daily_returns.mean()
+#     # volatility = daily_returns.std()
+#     cov_matrix = daily_returns.cov()
+#     rf_rate = await get_rf_rate()
+#     # sharpe_ratio = (avg_return - rf_rate) / volatility
+
+#     optimal_weights = get_optimal_weights(avg_return, cov_matrix, rf_rate)
+
+#     return optimal_weights
+
+async def get_portfolio(stocks):
+    tickers = [stock['symbol'] for stock in stocks]
+    num_tickers = len(tickers)
+    price_data = await get_historical_data(tickers)
+    # change this code so that old history for AAPL doesn't get dropped because META is newer
+    daily_returns = price_data.pct_change()
     avg_return = daily_returns.mean()
-    # volatility = daily_returns.std()
+    volatility = daily_returns.std()
     cov_matrix = daily_returns.cov()
     rf_rate = await get_rf_rate()
-    # sharpe_ratio = (avg_return - rf_rate) / volatility
-
     optimal_weights = get_optimal_weights(avg_return, cov_matrix, rf_rate)
 
-    return optimal_weights
+    portfolio_data = []
+    for i in range(num_tickers):
+        portfolio_data.append({
+            "symbol": tickers[i],
+            "name": stocks[i]['name'],
+            "price": float(stocks[i]['price']),
+            "currency": stocks[i]['currency'],
+            "weight": float(optimal_weights[i]),
+        })
+    portfolio_value = 100000
+    exchange_rate = await get_exchange_rate()
+    portfolio_data = calculate_shares(portfolio_data, portfolio_value, exchange_rate)
+    
+    return portfolio_data

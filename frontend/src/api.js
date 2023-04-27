@@ -88,7 +88,6 @@ const fetchStockSuggestions = async (searchTerm) => {
   };
   
 const fetchPortfolio = async (watchlist) => {
-  console.log(watchlist)
   const response = await fetch('http://127.0.0.1:5000/portfolio', {
     method: 'POST',
     headers: {
