@@ -10,10 +10,10 @@ CORS(app)
 #     return jsonify({"message": "Hello, this is a simple endpoint!"})
 
 @app.route('/portfolio', methods=['POST'])
-async def calculate_portfolio():
+def calculate_portfolio():
     stocks = request.json
-    metrics = await get_portfolio(stocks)
-    return jsonify(metrics)
+    data = get_portfolio(stocks)
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

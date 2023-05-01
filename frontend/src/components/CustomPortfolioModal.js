@@ -1,7 +1,12 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-const CustomPortfolioModal = ({ show, onHide }) => {
+const CustomPortfolioModal = ({ show, onHide, portfolio }) => {
+
+  function formatNumber(num) {
+    return new Intl.NumberFormat('en-CA').format(num);
+  }
+
   return (
     <Modal show={show} onHide={onHide} size="xl">
       <Modal.Header closeButton>
@@ -24,7 +29,17 @@ const CustomPortfolioModal = ({ show, onHide }) => {
             </tr>
           </thead>
           <tbody>
-            {/* Add table rows with data here */}
+            {portfolio.map((stock) => (
+              <tr key={stock.symbol}>
+                  <td>{stock.symbol}</td>
+                  <td>{stock.name}</td>
+                  <td>{stock.price}</td>
+                  <td>{stock.currency}</td>
+                  <td>{stock.shares}</td>
+                  <td>{formatNumber(stock.bookValueCAD)}</td>
+                  <td>{formatNumber(stock.bookValueLocal)}</td>
+                </tr>
+            ))}
           </tbody>
         </table>
       </Modal.Body>

@@ -12,6 +12,7 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+  const [portfolio, setPortfolio] = useState([]);
 
 
   const handleSearch = async (searchTerm) => {
@@ -46,12 +47,13 @@ function App() {
   const handleShowPortfolioModal = async () => {
     try {
       const portfolioData = await fetchPortfolio(watchlist);
-      // Pass the portfolioData to the CustomPortfolioModal component, e.g., using a state variable
+      setPortfolio(portfolioData);
       setShowPortfolioModal(true);
     } catch (error) {
       console.error('Error while generating the portfolio:', error);
     }
   };
+
 
 
   return (
@@ -84,6 +86,7 @@ function App() {
         <CustomPortfolioModal
           show={showPortfolioModal}
           onHide={handleClosePortfolioModal}
+          portfolio={portfolio}
         />
       </div>
     </div>
