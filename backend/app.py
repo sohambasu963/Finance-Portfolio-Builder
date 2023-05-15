@@ -4,6 +4,7 @@ from calculate_portfolio import get_portfolio
 from dotenv import load_dotenv
 import os
 import requests
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +18,18 @@ def calculate_portfolio():
     stocks = request.json
     data = get_portfolio(stocks)
     return jsonify(data)
+
+@app.route('/watchlist', methods=['GET'])
+def get_watchlist():
+    NUM_STOCKS = 10
+    TOP_N = 30
+
+    df = pd.read_excel("../data/stock_metrics.csv")
+    top_stocks = df.head(TOP_N)
+    watchlist_stocks = top_stocks.sample(NUM_STOCKS)
+    print(watchlist_stocks)
+
+    return watchlist_stocks
 
 @app.route('/search', methods=['GET'])
 def search(search_term):

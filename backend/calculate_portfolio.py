@@ -60,7 +60,7 @@ def get_historical_data(tickers):
 
     for ticker in tickers:
         try:
-            ts = TimeSeries(key=ALPHA_VANTAGE_API_KEY, output_format='pandas')
+            ts = TimeSeries(key="CJ776ZF0EY6FPKV0", output_format='pandas')
             data, meta_data = ts.get_daily_adjusted(symbol=ticker, outputsize='full')
             data = data['5. adjusted close'].rename(ticker)
             
@@ -98,7 +98,7 @@ def get_portfolio(stocks):
             "currency": stocks[i]['currency'],
             "weight": float(optimal_weights[i]),
         })
-    portfolio_value = 100000
+    portfolio_value = 100_000
     # exchange_rate = get_exchange_rate()
     exchange_rate = 1.35
     portfolio_data = calculate_shares(portfolio_data, portfolio_value, exchange_rate)

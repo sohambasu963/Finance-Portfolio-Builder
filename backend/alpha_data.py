@@ -38,7 +38,8 @@ def calculate_metrics(ticker_data):
     daily_returns = ticker_data['5. adjusted close'].pct_change().dropna()
     avg_return = daily_returns.mean()
     volatility = daily_returns.std()
-    sharpe_ratio = avg_return / volatility
+    rf_rate = 0.045
+    sharpe_ratio = (avg_return - rf_rate) / volatility
     return avg_return, volatility, sharpe_ratio
 
 def get_stock_metrics(ticker):
@@ -53,7 +54,11 @@ def get_stock_metrics(ticker):
             'Sharpe Ratio': sharpe_ratio,
         }
     except Exception as e:
-        print(f"Error fetching data for {ticker}: {e}")
+        if ".TRT" not in ticker:
+            return get_stock_metrics(ticker + ".TRT")
+        else: 
+            print(f"Error fetching data for {ticker}: {e}")
+
 
 def main():
     sp500_tickers = scrape_tickers(SP500_DATA_URL)
@@ -63,8 +68,9 @@ def main():
     with ThreadPoolExecutor(max_workers=3) as executor:
         stock_metrics = list(executor.map(get_stock_metrics, all_tickers))
 
+    # stock_metrics = [metric for metric in stock_metrics if metric is not None]
     stock_metrics = [metric for metric in stock_metrics if metric is not None]
-    stock_metrics_df = pd.DataFrame(stock_metrics)
+    stock_metrics_df = pd.DataFrame(stock_metrics).dropna().sort_values(by="Sharpe Ratio", ascending=False)
     stock_metrics_df.to_csv('../data/stock_metrics.csv', index=False)
     return stock_metrics_df
 
