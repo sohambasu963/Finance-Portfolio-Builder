@@ -16,6 +16,7 @@ git clone https://github.com/sohambasu963/Finance-Portfolio-Builder.git
 3. Get an API key for Alpha Vantage API from the following website:
    https://www.alphavantage.co/support/#api-key
 
+
 Backend Setup:
 *** Please complete these steps within the backend folder of the repository ***
 
@@ -28,6 +29,7 @@ pip3 install module1 module2 ...
 ```
 ALPHA_VANTAGE_API_KEY="your_api_key_here"
 ```
+
 
 Frontend Setup:
 *** Please complete these steps within the frontend folder of the repository ***
