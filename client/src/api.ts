@@ -1,3 +1,10 @@
+
+type SuggestionData = {
+  symbol: string;
+  name: string;
+  currency: string;
+};
+
 const fetchStockSuggestions = async (searchTerm: string) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
@@ -30,7 +37,7 @@ const fetchStockSuggestions = async (searchTerm: string) => {
   };
   
 
-  const fetchStockData = async (suggestion: any) => {
+  const fetchStockData = async (suggestion: SuggestionData) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
     const QUOTE_FUNCTION = 'GLOBAL_QUOTE';
@@ -101,10 +108,23 @@ const fetchPortfolio = async (watchlist: any) => {
   }
 
   const data = await response.json();
-  console.log(data)
+
+  return data;
+};
+
+const fetchWatchlist = async () => {
+  const response = await fetch('http://127.0.0.1:5000/watchlist', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+
   return data;
 };
 
   
-  export { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData, fetchPortfolio};
+  export { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData, fetchPortfolio, fetchWatchlist};
   

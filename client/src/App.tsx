@@ -4,7 +4,7 @@ import SearchBar from './components/SearchBar';
 import StockWatchlist from './components/StockWatchlist';
 import CustomPortfolioModal from './components/CustomPortfolioModal';
 import { Button } from 'react-bootstrap';
-import { fetchStockSuggestions, fetchStockData, fetchPortfolio } from './api';
+import { fetchStockSuggestions, fetchStockData, fetchPortfolio, fetchWatchlist } from './api';
 
 type SuggestionData = {
   symbol: string;
@@ -29,25 +29,16 @@ function App() {
       return;
     }
     const stockData = await fetchStockData(suggestion);
-    const newStockData = {
-      symbol: stockData.symbol,
-      name: stockData.name,
-      price: stockData.price,
-      currency: stockData.currency,
-      percentChange: stockData.percentChange,
-      dividendYield: stockData.dividendYield,
-      peRatio: stockData.peRatio,
-      beta: stockData.beta,
-    };
-    setWatchlist([...watchlist, newStockData]);
+    setWatchlist([...watchlist, stockData]);
   };
 
   const handleRemoveStock = (symbol: string) => {
     setWatchlist(watchlist.filter((stock: any) => stock.symbol !== symbol));
   };
 
-  const handleGenerateWatchlist = () => {
-    // Add code to generate a watchlist of stocks
+  const handleGenerateWatchlist = async () => {
+    const watchlistStocks = await fetchWatchlist();
+    console.log(watchlistStocks);
   };  
 
   const handleClosePortfolioModal = () => {

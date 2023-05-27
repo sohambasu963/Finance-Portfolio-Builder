@@ -36,8 +36,8 @@ def get_stock_data(ticker, interval='daily', outputsize='full'):
 
 def calculate_metrics(ticker_data):
     daily_returns = ticker_data['5. adjusted close'].pct_change().dropna()
-    avg_return = daily_returns.mean()
-    volatility = daily_returns.std()
+    avg_return = daily_returns.mean() * 252
+    volatility = daily_returns.std() * np.sqrt(252)
     rf_rate = 0.045
     sharpe_ratio = (avg_return - rf_rate) / volatility
     return avg_return, volatility, sharpe_ratio

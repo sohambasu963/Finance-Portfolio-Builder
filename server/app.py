@@ -21,97 +21,18 @@ def calculate_portfolio():
 
 @app.route('/watchlist', methods=['GET'])
 def get_watchlist():
-    NUM_STOCKS = 10
-    TOP_N = 30
+    NUM_STOCKS = 5
+    TOP_N = 25
 
-    df = pd.read_excel("../data/stock_metrics.csv")
+    df = pd.read_csv("../data/stock_metrics.csv")
     top_stocks = df.head(TOP_N)
     watchlist_stocks = top_stocks.sample(NUM_STOCKS)
+    watchlist_stocks = watchlist_stocks['Ticker'].tolist()
+
     print(watchlist_stocks)
 
-    return watchlist_stocks
+    return jsonify(watchlist_stocks)
 
-@app.route('/search', methods=['GET'])
-def search(search_term):
-    function = 'SYMBOL_SEARCH'
-
-    response = requests.get(
-        f"{API_URL}?function={function}&keywords={search_term}&apikey={ALPHA_VANTAGE_API_KEY}"
-    )
-    data = response.json()
-
-    if "bestMatches" not in data:
-        print("Invalid API response:", data)
-        return []
-
-    # Extract stock suggestions from the API response
-    suggestions = [
-        {
-            "symbol": item["1. symbol"],
-            "name": item["2. name"],
-            "currency": item["8. currency"],
-        }
-        for item in data["bestMatches"]
-        if item["8. currency"] in ["USD", "CAD"]
-    ]
-
-    return jsonify(suggestions)
-
-
-@app.route('/quote', methods=['GET'])
-def get_quote(suggestion):
-    quote_function = 'GLOBAL_QUOTE'
-    overview_function = 'OVERVIEW'
-
-    quote_response = requests.get(
-        f"{API_URL}?function={quote_function}&symbol={suggestion['symbol']}&apikey={ALPHA_VANTAGE_API_KEY}"
-    )
-    quote_data = quote_response.json()
-
-    overview_response = requests.get(
-        f"{API_URL}?function={overview_function}&symbol={suggestion['symbol'].split('.')[0]}&apikey={ALPHA_VANTAGE_API_KEY}"
-    )
-    overview_data = overview_response.json()
-
-    stock_data = {
-        "symbol": suggestion["symbol"],
-        "name": suggestion["name"],
-        "price": round(float(quote_data["Global Quote"]["05. price"]), 2),
-        "currency": suggestion["currency"],
-        "percentChange": round(float(quote_data["Global Quote"]["10. change percent"].rstrip("%")), 2),
-        "dividendYield": round(float(overview_data["DividendYield"]) * 100, 2) if overview_data["DividendYield"] else "N/A",
-        "peRatio": round(float(overview_data["PERatio"]), 2) if overview_data["PERatio"] and overview_data["PERatio"] != "None" else "N/A",
-        "beta": round(float(overview_data["Beta"]), 2) if overview_data["Beta"] else "N/A",
-    }
-
-    return jsonify(stock_data)
-
-
-@app.route('/performance', methods=['GET'])
-def get_performance_data(symbol):
-    function = 'TIME_SERIES_DAILY_ADJUSTED'
-
-    response = requests.get(
-        f"{API_URL}?function={function}&symbol={symbol}&outputsize=compact&apikey={ALPHA_VANTAGE_API_KEY}"
-    )
-    data = response.json()
-
-    if "Time Series (Daily)" not in data:
-        print("Invalid API response:", data)
-        return []
-
-    time_series_data = data["Time Series (Daily)"]
-
-    dates = list(time_series_data.keys())
-    adjusted_closing_prices = [round(float(time_series_data[date]["5. adjusted close"]), 2) for date in dates]
-
-    performance_data = {
-        "stock": data["Meta Data"]["2. Symbol"],
-        "labels": dates,
-        "data": adjusted_closing_prices
-    }
-
-    return jsonify(performance_data)
 
 
 if __name__ == '__main__':
