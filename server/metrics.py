@@ -10,6 +10,10 @@ ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 API = "https://www.alphavantage.co/query"
 
 def get_rf_rate():
+    """
+    Fetches the annual risk-free rate from the Alpha Vantage API.
+    Returns the daily risk-free rate as a float.
+    """
     try:
         API_FUNCTION = "FEDERAL_FUNDS_RATE"
         API_URL = f"{API}?function={API_FUNCTION}&outputsize=full&apikey={ALPHA_VANTAGE_API_KEY}"
@@ -25,6 +29,10 @@ def get_rf_rate():
     return risk_free_rate
 
 def get_exchange_rate():
+    """
+    Fetches the exchange rate for USD to CAD from the Alpha Vantage API.
+    Returns the exchange rate as a float.
+    """
     try:
         fx = ForeignExchange(key=ALPHA_VANTAGE_API_KEY)
         data, _ = fx.get_currency_exchange_rate(from_currency='USD', to_currency='CAD')

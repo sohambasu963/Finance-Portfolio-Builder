@@ -14,6 +14,10 @@ ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 API = "https://www.alphavantage.co/query"
 
 def calculate_shares(portfolio_data, portfolio_value, exchange_rate):
+    """
+    Calculates the number of shares to buy for each stock in the portfolio based on the desired portfolio value and exchange rate.
+    Returns the updated portfolio data with the number of shares, CAD book value, and local currency book value for each stock.
+    """
     for stock in portfolio_data:
         if stock['currency'] == 'USD':
             stock['shares'] = round((portfolio_value * stock['weight']) / (stock['price'] * exchange_rate))
@@ -29,6 +33,10 @@ def calculate_shares(portfolio_data, portfolio_value, exchange_rate):
 
 
 def get_optimal_weights(avg_return, cov_matrix, rf_rate):
+    """
+    Calculates the optimal portfolio weights using the Sharpe ratio.
+    Returns a list of the optimal weights for each asset in the portfolio.
+    """
     num_assets = len(avg_return)
     initial_weights = np.ones(num_assets) / num_assets
 
@@ -58,8 +66,11 @@ def get_optimal_weights(avg_return, cov_matrix, rf_rate):
 
 
 def get_historical_data(tickers):
+    """
+    Fetches historical price data for the given list of tickers using Alpha Vantage API.
+    Returns a Pandas DataFrame with the adjusted close prices for each ticker.
+    """
     price_data = None
-
     for ticker in tickers:
         try:
             ts = TimeSeries(key=ALPHA_VANTAGE_API_KEY, output_format='pandas')
@@ -78,23 +89,20 @@ def get_historical_data(tickers):
 
 
 def get_portfolio(stocks):
+    """
+    Calculates the optimal portfolio weights for the given list of stocks using the Sharpe ratio.
+    Returns a list of dictionaries with the portfolio data for each stock.
+    """
     tickers = [stock['symbol'] for stock in stocks]
     num_tickers = len(tickers)
     price_data = get_historical_data(tickers)
 
     daily_returns = price_data.pct_change()
     avg_return = daily_returns.mean()
-    # volatility = daily_returns.std()
     cov_matrix = daily_returns.cov()
     rf_rate = get_rf_rate()
 
-    print(price_data)
-    print(avg_return)
-    print(cov_matrix)
-    print(rf_rate)
-
     optimal_weights = get_optimal_weights(avg_return, cov_matrix, rf_rate)
-    print(optimal_weights)
     
     portfolio_data = []
     for i in range(num_tickers):
@@ -106,8 +114,7 @@ def get_portfolio(stocks):
             "weight": float(optimal_weights[i]),
         })
     portfolio_value = 100_000
-    # exchange_rate = get_exchange_rate()
-    exchange_rate = 1.35
+    exchange_rate = get_exchange_rate()
     portfolio_data = calculate_shares(portfolio_data, portfolio_value, exchange_rate)
 
     print(portfolio_data)
