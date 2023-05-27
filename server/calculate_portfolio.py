@@ -42,7 +42,9 @@ def get_optimal_weights(avg_return, cov_matrix, rf_rate):
         {"type": "eq", "fun": lambda weights: np.sum(weights) - 1},
     )
 
-    bounds = [(0, 1) for _ in range(num_assets)]
+    min_weight = 1 / (num_assets * 4)
+
+    bounds = [(min_weight, 1)] * num_assets
 
     result = minimize(
         objective_function,
@@ -60,7 +62,7 @@ def get_historical_data(tickers):
 
     for ticker in tickers:
         try:
-            ts = TimeSeries(key="CJ776ZF0EY6FPKV0", output_format='pandas')
+            ts = TimeSeries(key=ALPHA_VANTAGE_API_KEY, output_format='pandas')
             data, meta_data = ts.get_daily_adjusted(symbol=ticker, outputsize='full')
             data = data['5. adjusted close'].rename(ticker)
             
@@ -71,7 +73,7 @@ def get_historical_data(tickers):
                 
         except Exception as e:
             print(f"An error occurred while fetching historical data for {ticker}: {e}")
-        
+
     return price_data
 
 
@@ -84,10 +86,15 @@ def get_portfolio(stocks):
     avg_return = daily_returns.mean()
     # volatility = daily_returns.std()
     cov_matrix = daily_returns.cov()
-    # rf_rate = get_rf_rate()
-    rf_rate = 0.045
-    rf_rate = (1 + rf_rate / 100) ** (1 / 252) - 1
+    rf_rate = get_rf_rate()
+
+    print(price_data)
+    print(avg_return)
+    print(cov_matrix)
+    print(rf_rate)
+
     optimal_weights = get_optimal_weights(avg_return, cov_matrix, rf_rate)
+    print(optimal_weights)
     
     portfolio_data = []
     for i in range(num_tickers):
