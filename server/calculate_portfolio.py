@@ -13,6 +13,7 @@ load_dotenv(".env.local")
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 API = "https://www.alphavantage.co/query"
 
+
 def calculate_shares(portfolio_data, portfolio_value, exchange_rate):
     """
     Calculates the number of shares to buy for each stock in the portfolio based on the desired portfolio value and exchange rate.
@@ -111,12 +112,12 @@ def get_portfolio(stocks):
             "name": stocks[i]['name'],
             "price": float(stocks[i]['price']),
             "currency": stocks[i]['currency'],
-            "weight": float(optimal_weights[i]),
+            "weight": float(optimal_weights[i])
         })
+
     portfolio_value = 100_000
     exchange_rate = get_exchange_rate()
     portfolio_data = calculate_shares(portfolio_data, portfolio_value, exchange_rate)
+    portfolio_data = sorted(portfolio_data, key=lambda x: x['bookValueCAD'], reverse=True)
 
-    print(portfolio_data)
-    
     return portfolio_data
