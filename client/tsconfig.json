@@ -15,7 +15,7 @@
       "noEmit": true,
       "jsx": "react"
     },
-    "include": ["src/**/*.ts", "src/**/*.js", "src/App.tsx", "src/components/StockWatchlist.tsx", "src/components/CustomPortfolioModal.tsx", "src/components/StockDetailsModal.tsx"],
+    "include": ["src/**/*.ts", "!src/**/*test.ts"],,
     "exclude": ["node_modules"]
   }
   
