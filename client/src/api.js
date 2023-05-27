@@ -53,7 +53,7 @@ const fetchStockSuggestions = async (searchTerm) => {
       "currency": suggestion.currency,
       "percentChange": Number(quoteData["Global Quote"]["10. change percent"].slice(0, -1)).toFixed(2),
       "dividendYield": overviewData["DividendYield"] ? (Number(overviewData["DividendYield"]) * 100).toFixed(2) : "N/A",
-      "peRatio": overviewData["PERatio"] && overviewData["PERatio"] != "None" ? Number(overviewData["PERatio"]).toFixed(2) : "N/A",
+      "peRatio": overviewData["PERatio"] && overviewData["PERatio"] !== "None" ? Number(overviewData["PERatio"]).toFixed(2) : "N/A",
       "beta": overviewData["Beta"] ? Number(overviewData["Beta"]).toFixed(2) : "N/A",
     }
     return stockData
