@@ -1,9 +1,15 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-const CustomPortfolioModal = ({ show, onHide, portfolio }) => {
+interface CustomPortfolioModalProps {
+  show: boolean;
+  onHide: () => void;
+  portfolio: any;
+}
 
-  function formatNumber(num) {
+const CustomPortfolioModal = ({ show, onHide, portfolio }: CustomPortfolioModalProps) => {
+
+  function formatNumber(num: number) {
     return new Intl.NumberFormat('en-CA').format(num);
   }
 
@@ -29,7 +35,7 @@ const CustomPortfolioModal = ({ show, onHide, portfolio }) => {
             </tr>
           </thead>
           <tbody>
-            {portfolio.map((stock) => (
+            {portfolio.map((stock: any) => (
               <tr key={stock.symbol}>
                   <td>{stock.symbol}</td>
                   <td>{stock.name}</td>

@@ -5,14 +5,18 @@ import { Button } from 'react-bootstrap';
 import StockDetailsModal from './StockDetailsModal';
 import { fetchStockHistoricalData } from '../api';
 
+interface StockWatchlistProps {
+    stocks: any;
+    onRemoveStock: (symbol: string) => void;
+  }
 
-const StockWatchlist = ({ stocks, onRemoveStock }) => {
+const StockWatchlist = ({ stocks, onRemoveStock }: StockWatchlistProps) => {
 
     const [showModal, setShowModal] = useState(false);
     const [historicalData, setHistoricalData] = useState({ labels: [], data: [] });
 
-    const handleStockClick = async (symbol) => {
-        const data = await fetchStockHistoricalData(symbol);
+    const handleStockClick = async (symbol: string) => {
+        const data: any = await fetchStockHistoricalData(symbol);
         setHistoricalData(data);
         setShowModal(true);
       };
@@ -34,10 +38,10 @@ const StockWatchlist = ({ stocks, onRemoveStock }) => {
                 </tr>
             </thead>
             <tbody>
-                {stocks.map((stock) => (
+                {stocks.map((stock: any) => (
                     <tr key={stock.symbol}>
                         <td>
-                            <a href="#" onClick={(e) => { e.preventDefault(); handleStockClick(stock.symbol); }}>
+                            <a href="#/" onClick={(e) => { e.preventDefault(); handleStockClick(stock.symbol); }}>
                                 {stock.symbol}
                             </a>
                         </td>

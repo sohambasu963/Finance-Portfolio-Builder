@@ -1,4 +1,4 @@
-const fetchStockSuggestions = async (searchTerm) => {
+const fetchStockSuggestions = async (searchTerm: string) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
     const FUNCTION = 'symbol_SEARCH';
@@ -15,12 +15,12 @@ const fetchStockSuggestions = async (searchTerm) => {
   
     // Extract stock suggestions from the API response
     const suggestions = data.bestMatches
-      .filter((item) => {
+      .filter((item: any) => {
         const currency = item['8. currency'];
         // Filter for US and Canadian stocks
         return currency === 'USD' || currency === 'CAD';
       })
-      .map((item) => ({
+      .map((item: any) => ({
         symbol: item['1. symbol'],
         name: item['2. name'],
         currency: item['8. currency']
@@ -30,7 +30,7 @@ const fetchStockSuggestions = async (searchTerm) => {
   };
   
 
-  const fetchStockData = async (suggestion) => {
+  const fetchStockData = async (suggestion: any) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
     const QUOTE_FUNCTION = 'GLOBAL_QUOTE';
@@ -59,7 +59,7 @@ const fetchStockSuggestions = async (searchTerm) => {
     return stockData
   }
 
-  const fetchStockHistoricalData = async (symbol) => {
+  const fetchStockHistoricalData = async (symbol: string) => {
     const apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
     const API_URL = 'https://www.alphavantage.co/query';
     const FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED';
@@ -87,7 +87,7 @@ const fetchStockSuggestions = async (searchTerm) => {
     return historicalData;
   };
   
-const fetchPortfolio = async (watchlist) => {
+const fetchPortfolio = async (watchlist: any) => {
   const response = await fetch('http://127.0.0.1:5000/portfolio', {
     method: 'POST',
     headers: {

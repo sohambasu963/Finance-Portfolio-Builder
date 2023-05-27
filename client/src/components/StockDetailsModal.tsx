@@ -7,9 +7,15 @@ import { enUS } from 'date-fns/locale';
 
 ChartJS.register(TimeScale);
 
-const StockDetailsModal = ({ show, onHide, historicalData }) => {
+interface StockDetailsModalProps {
+  show: boolean;
+  onHide: () => void;
+  historicalData: any;
+}
+
+const StockDetailsModal = ({ show, onHide, historicalData }: StockDetailsModalProps) => {
   const chartRef = useRef(null);
-  const chartInstance = useRef(null);
+  const chartInstance = useRef<Chart | null>(null);
 
   useEffect(() => {
     if (chartRef && chartRef.current) {
@@ -17,7 +23,7 @@ const StockDetailsModal = ({ show, onHide, historicalData }) => {
         chartInstance.current.destroy();
       }
 
-      const chartConfig = {
+      const chartConfig: any = {
         type: 'line',
         data: {
           labels: historicalData.labels,
@@ -50,7 +56,7 @@ const StockDetailsModal = ({ show, onHide, historicalData }) => {
                 },
                 tooltip: {
                     callbacks: {
-                        title: function(tooltipItem) {
+                        title: function(tooltipItem: any) {
                             const label = tooltipItem[0].label.split(',');
                             return label[0] + ',' + label[1];
                         }

@@ -3,41 +3,51 @@ import './App.css';
 import SearchBar from './components/SearchBar';
 import StockWatchlist from './components/StockWatchlist';
 import CustomPortfolioModal from './components/CustomPortfolioModal';
-import { Button, Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { fetchStockSuggestions, fetchStockData, fetchPortfolio } from './api';
 
-import { fetchStockSuggestions, fetchStockData, fetchStockHistoricalData, fetchPortfolio } from './api';
+type SuggestionData = {
+  symbol: string;
+  name: string;
+  currency: string;
+};
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [watchlist, setWatchlist] = useState([]);
+  const [watchlist, setWatchlist] = useState<any>([]);
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [portfolio, setPortfolio] = useState([]);
 
 
-  const handleSearch = async (searchTerm) => {
+  const handleSearch = async (searchTerm: string) => {
     // Fetch stock suggestions from the API
-    var newSuggestions = await fetchStockSuggestions(searchTerm);
+    const newSuggestions = await fetchStockSuggestions(searchTerm);
     return newSuggestions;
   };
 
-  const handleSuggestionSelect = async (suggestion) => {
-    setSearchTerm(suggestion);
-    // Handle the suggestion selection, e.g., fetch stock data
-    // if suggestion not in watchlist
-    if (watchlist.some((stock) => stock.symbol === suggestion.symbol)) {
+  const handleSuggestionSelect = async (suggestion: SuggestionData) => {
+    if (watchlist.some((stock: any) => stock.symbol === suggestion.symbol)) {
       return;
     }
     const stockData = await fetchStockData(suggestion);
-    setWatchlist([...watchlist, stockData]);
+    const newStockData = {
+      symbol: stockData.symbol,
+      name: stockData.name,
+      price: stockData.price,
+      currency: stockData.currency,
+      percentChange: stockData.percentChange,
+      dividendYield: stockData.dividendYield,
+      peRatio: stockData.peRatio,
+      beta: stockData.beta,
+    };
+    setWatchlist([...watchlist, newStockData]);
   };
 
-  const handleRemoveStock = (symbol) => {
-    setWatchlist(watchlist.filter((stock) => stock.symbol !== symbol));
+  const handleRemoveStock = (symbol: string) => {
+    setWatchlist(watchlist.filter((stock: any) => stock.symbol !== symbol));
   };
 
   const handleGenerateWatchlist = () => {
-    // Add your logic to generate the watchlist here
+    // Add code to generate a watchlist of stocks
   };  
 
   const handleClosePortfolioModal = () => {
